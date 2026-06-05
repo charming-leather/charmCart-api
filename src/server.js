@@ -8,8 +8,15 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("CharmCart API is running 🚀");
+  res.send("CharmCart API is running!");
 });
+
+// Import my routes
+const productRoutes = require("./routes/product.routes");
+
+// Register my routes
+app.use("/api/products", productRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 
