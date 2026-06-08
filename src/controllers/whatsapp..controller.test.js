@@ -12,7 +12,7 @@ describe('generateMessage', () => {
     orderRepo.getById.mockResolvedValue({
       id: 1,
       customerName: "Aneesah",
-      contactNumber: "0765936911",
+      contactNumber: "0123456789",
       address: "Durban",
       items: [{ productId: 1, quantity: 2 }],
       total: 500,

@@ -20,8 +20,10 @@ function formatMessage(order) {
   return message;
 }
 
+require('dotenv').config();
+
 function createWhatsAppLink(message) {
-  const phoneNumber = "27765939611";
+  const phoneNumber = process.env.WHATSAPP_NUMBER;
   const encodedMessage = encodeURIComponent(message);
 
   return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;

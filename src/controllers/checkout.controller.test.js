@@ -15,7 +15,7 @@ describe('completeCheckout', () => {
 
     const result = await completeCheckout({
       customerName: "Aneesah",
-      contactNumber: "0765936911",
+      contactNumber: "0123456789",
       address: "Durban",
       items: [{ productId: 1, quantity: 2 }],
       total: 500
