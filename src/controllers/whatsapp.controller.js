@@ -2,7 +2,7 @@ const { ApiError: Error } = require("../errors/apiError");
 const orderDatabase = require("../repository/order.repository");
 
 function formatMessage(order) {
-  let message = `🛍️ NEW ORDER\n\n`;
+  let message = `NEW ORDER\n\n`;
   message += `Order ID: ${order.id}\n`;
   message += `Customer: ${order.customerName}\n`;
   message += `Contact: ${order.contactNumber}\n`;
@@ -21,7 +21,7 @@ function formatMessage(order) {
 }
 
 function createWhatsAppLink(message) {
-  const phoneNumber = "27XXXXXXXXX"; // store owner number
+  const phoneNumber = "27765939611";
   const encodedMessage = encodeURIComponent(message);
 
   return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;

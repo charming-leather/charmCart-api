@@ -38,7 +38,7 @@ exports.completeCheckout = async (checkoutData) => {
     status: "pending"
   });
 
-  // Clear cart after checkout
+ 
   await cartDatabase.clear();
 
   return {
