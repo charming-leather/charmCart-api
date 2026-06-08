@@ -8,17 +8,11 @@ const {
 
 jest.mock('../repository/cart.repository');
 
-const {
-  getAll,
-  add,
-  update,
-  updateQuantity,
-  delete: mockDelete
-} = require('../repository/cart.repository');
+const cartRepo = require('../repository/cart.repository');
 
 describe('getCart', () => {
   it('should return cart items', async () => {
-    getAll.mockResolvedValue([{ productId: 1, quantity: 2 }]);
+    cartRepo.getAll.mockResolvedValue([{ productId: 1, quantity: 2 }]);
 
     const result = await getCart();
 
@@ -28,7 +22,7 @@ describe('getCart', () => {
 
 describe('addToCart', () => {
   it('should add item to cart', async () => {
-    add.mockResolvedValue({ productId: 1, quantity: 2 });
+    cartRepo.add.mockResolvedValue({ productId: 1, quantity: 2 });
 
     const result = await addToCart({
       productId: 1,
@@ -46,7 +40,7 @@ describe('addToCart', () => {
 
 describe('updateCartItem', () => {
   it('should update cart item', async () => {
-    update.mockResolvedValue(true);
+    cartRepo.update.mockResolvedValue(true);
 
     const result = await updateCartItem(1, { quantity: 3 });
 
@@ -58,7 +52,7 @@ describe('updateCartItem', () => {
 
 describe('updateQuantity', () => {
   it('should update quantity', async () => {
-    updateQuantity.mockResolvedValue(true);
+    cartRepo.updateQuantity.mockResolvedValue(true);
 
     const result = await updateQuantity(1, 5);
 
@@ -70,7 +64,7 @@ describe('updateQuantity', () => {
 
 describe('removeFromCart', () => {
   it('should remove item from cart', async () => {
-    mockDelete.mockResolvedValue(true);
+    cartRepo.delete.mockResolvedValue(true);
 
     const result = await removeFromCart(1);
 
@@ -78,4 +72,4 @@ describe('removeFromCart', () => {
       message: "Item removed from cart"
     });
   });
-});n
+});
