@@ -1,4 +1,4 @@
-const Error = require("../errors/apiError");
+const { ApiError: Error } = require("../errors/apiError");
 const database = require("../repository/cart.repository");
 
 exports.getCart = async () => {

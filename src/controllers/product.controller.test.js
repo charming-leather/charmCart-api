@@ -41,8 +41,8 @@ describe('getProductById', () => {
 
 describe('getAllProducts', () => {
   const mockProducts = [
-    { id: 1, name: "Wallet", price: 200 },
-    { id: 2, name: "Belt", price: 150 }
+    { id: 1, name: "Wallet", price: 850 },
+    { id: 2, name: "Belt", price: 450 }
   ];
 
   it('should return all products', async () => {
