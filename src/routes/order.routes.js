@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const orderController = require('../controllers/order.controller');
+const orderController = require('../controllers/orders.controller');
 
 router.get('/', async (req, res, next) => {
   try {
