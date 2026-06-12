@@ -16,7 +16,13 @@ exports.getOrderById = async (id) => {
 };
 
 exports.createOrder = async (orderData) => {
-  if (!orderData.customerName || !orderData.items || !orderData.total) {
+  if (
+    !orderData.customerName ||
+    !orderData.contactNumber ||
+    !orderData.address ||
+    !orderData.items ||
+    !orderData.total
+  ) {
     throw Error.badRequest("Missing required order fields");
   }
 
@@ -24,6 +30,10 @@ exports.createOrder = async (orderData) => {
 };
 
 exports.updateOrderStatus = async (id, status) => {
+  if (!status) {
+    throw Error.badRequest("Status is required");
+  }
+
   const updated = await database.updateStatus(id, status);
 
   if (!updated) {

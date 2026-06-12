@@ -20,25 +20,34 @@ exports.completeCheckout = async (checkoutData) => {
 
   const reference = generateReference();
 
+ 
+  const enrichedItems = checkoutData.items.map(item => ({
+    productId: item.productId,
+    productName: item.productName || "Leather Product",
+    price: item.price || 0,
+    quantity: item.quantity,
+    subtotal: (item.price || 0) * item.quantity
+  }));
+
   const checkout = {
     reference,
     ...checkoutData,
+    items: enrichedItems,
     date: new Date()
   };
 
-
   await database.add(checkout);
 
-  
   await orderDatabase.add({
     customerName: checkoutData.customerName,
-    items: checkoutData.items,
+    contactNumber: checkoutData.contactNumber,
+    address: checkoutData.address,
+    items: enrichedItems,
     total: checkoutData.total,
     reference,
     status: "pending"
   });
 
- 
   await cartDatabase.clear();
 
   return {

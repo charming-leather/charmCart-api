@@ -1,26 +1,37 @@
 const { ApiError: Error } = require("../errors/apiError");
 const orderDatabase = require("../repository/order.repository");
+require("dotenv").config();
 
 function formatMessage(order) {
-  let message = `NEW ORDER\n\n`;
+  let message = `NEW LEATHER ORDER RECEIVED\n\n`;
+
+  message += `ORDER DETAILS\n`;
   message += `Order ID: ${order.id}\n`;
-  message += `Customer: ${order.customerName}\n`;
+  message += `Status: ${order.status || "Pending"}\n\n`;
+
+  message += `CUSTOMER DETAILS\n`;
+  message += `Name: ${order.customerName}\n`;
   message += `Contact: ${order.contactNumber}\n`;
   message += `Address: ${order.address}\n\n`;
 
-  message += `Items:\n`;
+  message += `PRODUCTS ORDERED\n`;
 
   order.items.forEach((item, index) => {
-    message += `${index + 1}. Product ID: ${item.productId} | Qty: ${item.quantity}\n`;
+    message += `${index + 1}. ${item.productName || "Leather Product"}\n`;
+    message += `   • Product ID: ${item.productId}\n`;
+    message += `   • Quantity: ${item.quantity}\n`;
+    message += `   • Unit Price: R${item.price || 0}\n`;
+    message += `   • Subtotal: R${(item.price || 0) * item.quantity}\n\n`;
   });
 
-  message += `\nTotal: R${order.total}\n`;
-  message += `Status: ${order.status || "pending"}\n`;
+  message += `ORDER TOTAL\n`;
+  message += `Total: R${order.total}\n\n`;
+
+  message += `Thank you for choosing our genuine leather products.\n`;
+  message += `We will process your order shortly.`;
 
   return message;
 }
-
-require('dotenv').config();
 
 function createWhatsAppLink(message) {
   const phoneNumber = process.env.WHATSAPP_NUMBER;
@@ -29,7 +40,7 @@ function createWhatsAppLink(message) {
   return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 }
 
-exports.generateMessage = async (data) => {
+async function generateMessage(data) {
   if (!data.orderId) {
     throw Error.badRequest("Missing orderId");
   }
@@ -47,9 +58,9 @@ exports.generateMessage = async (data) => {
     message,
     whatsappLink: link
   };
-};
+}
 
-exports.getWhatsAppLink = async (orderId) => {
+async function getWhatsAppLink(orderId) {
   const order = await orderDatabase.getById(orderId);
 
   if (!order) {
@@ -62,4 +73,9 @@ exports.getWhatsAppLink = async (orderId) => {
   return {
     whatsappLink: link
   };
+}
+
+module.exports = {
+  generateMessage,
+  getWhatsAppLink
 };
