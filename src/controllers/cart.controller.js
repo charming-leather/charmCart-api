@@ -6,8 +6,12 @@ exports.getCart = async () => {
 };
 
 exports.addToCart = async (item) => {
-  if (!item.productId || !item.quantity) {
-    throw Error.badRequest("Missing productId or quantity");
+  if (!item.productId) {
+    throw Error.badRequest("Missing productId");
+  }
+
+  if (!item.quantity || item.quantity < 1) {
+    throw Error.badRequest("Quantity must be at least 1");
   }
 
   return await database.add(item);
@@ -20,12 +24,15 @@ exports.updateCartItem = async (productId, data) => {
     throw Error.notFound("Cart item not found");
   }
 
-  return { message: "Cart item updated successfully" };
+  return {
+    message: "Cart item updated successfully",
+    productId
+  };
 };
 
 exports.updateQuantity = async (productId, quantity) => {
   if (!quantity || quantity < 1) {
-    throw Error.badRequest("Invalid quantity");
+    throw Error.badRequest("Quantity must be greater than 0");
   }
 
   const updated = await database.updateQuantity(productId, quantity);
@@ -34,7 +41,11 @@ exports.updateQuantity = async (productId, quantity) => {
     throw Error.notFound("Cart item not found");
   }
 
-  return { message: "Quantity updated successfully" };
+  return {
+    message: "Quantity updated successfully",
+    productId,
+    quantity
+  };
 };
 
 exports.removeFromCart = async (productId) => {
@@ -44,5 +55,8 @@ exports.removeFromCart = async (productId) => {
     throw Error.notFound("Cart item not found");
   }
 
-  return { message: "Item removed from cart" };
+  return {
+    message: "Item removed from cart",
+    productId
+  };
 };
