@@ -12,6 +12,8 @@ exports.add = async (order) => {
   const newOrder = {
     id: orders.length + 1,
     status: "pending",
+    createdAt: new Date(),
+    updatedAt: new Date(),
     ...order
   };
 
@@ -26,6 +28,16 @@ exports.updateStatus = async (id, status) => {
   if (!order) return false;
 
   order.status = status;
+  order.updatedAt = new Date();
 
+  return true;
+};
+
+exports.delete = async (id) => {
+  const index = orders.findIndex(o => o.id == id);
+
+  if (index === -1) return false;
+
+  orders.splice(index, 1);
   return true;
 };

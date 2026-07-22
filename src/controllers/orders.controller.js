@@ -26,7 +26,13 @@ exports.createOrder = async (orderData) => {
     throw Error.badRequest("Missing required order fields");
   }
 
-  return await database.add(orderData);
+  const newOrder = {
+    ...orderData,
+    status: "pending",
+    createdAt: new Date()
+  };
+
+  return await database.add(newOrder);
 };
 
 exports.updateOrderStatus = async (id, status) => {
@@ -41,6 +47,8 @@ exports.updateOrderStatus = async (id, status) => {
   }
 
   return {
-    message: "Order status updated successfully"
+    message: "Order status updated successfully",
+    orderId: id,
+    status
   };
 };

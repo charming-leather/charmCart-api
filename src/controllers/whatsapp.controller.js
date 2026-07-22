@@ -3,6 +3,10 @@ const orderDatabase = require("../repository/order.repository");
 require("dotenv").config();
 
 function formatMessage(order) {
+  if (!order || !order.items) {
+    return "Invalid order data";
+  }
+
   let message = `NEW LEATHER ORDER RECEIVED\n\n`;
 
   message += `ORDER DETAILS\n`;
@@ -35,13 +39,18 @@ function formatMessage(order) {
 
 function createWhatsAppLink(message) {
   const phoneNumber = process.env.WHATSAPP_NUMBER;
+
+  if (!phoneNumber) {
+    throw Error.badRequest("WhatsApp number is not configured");
+  }
+
   const encodedMessage = encodeURIComponent(message);
 
   return `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 }
 
 async function generateMessage(data) {
-  if (!data.orderId) {
+  if (!data || !data.orderId) {
     throw Error.badRequest("Missing orderId");
   }
 
@@ -61,6 +70,10 @@ async function generateMessage(data) {
 }
 
 async function getWhatsAppLink(orderId) {
+  if (!orderId) {
+    throw Error.badRequest("Missing orderId");
+  }
+
   const order = await orderDatabase.getById(orderId);
 
   if (!order) {

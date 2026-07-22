@@ -1,27 +1,33 @@
 const { ApiError: Error } = require("../errors/apiError");
-const database = require("../repository/checkout.repository");
-const orderDatabase = require("../repository/order.repository");
 const cartDatabase = require("../repository/cart.repository");
+const whatsappController = require("./whatsapp.controller");
 
 function generateReference() {
-  return "CHK-" + Date.now();
+  return "ORD-" + Date.now();
 }
 
+/**
+ * HOW I WANT MY SYSTEM TO WORK ...DIFFERENT FROM OTHER E-COMMERCE WEB APPS
+ * STEP 1: User clicks "Buy"
+ * STEP 2: System generates WhatsApp order message
+ * STEP 3: Owner receives order and creates it manually
+ */
 exports.completeCheckout = async (checkoutData) => {
   if (
     !checkoutData.customerName ||
     !checkoutData.contactNumber ||
-    !checkoutData.address ||
-    !checkoutData.items ||
-    !checkoutData.total
+    !checkoutData.address
   ) {
-    throw Error.badRequest("Missing required checkout fields");
+    throw Error.badRequest("Missing required customer details");
   }
 
-  const reference = generateReference();
+  const cartItems = await cartDatabase.getAll();
 
- 
-  const enrichedItems = checkoutData.items.map(item => ({
+  if (!cartItems || cartItems.length === 0) {
+    throw Error.badRequest("Cart is empty");
+  }
+
+  const enrichedItems = cartItems.map(item => ({
     productId: item.productId,
     productName: item.productName || "Leather Product",
     price: item.price || 0,
@@ -29,39 +35,45 @@ exports.completeCheckout = async (checkoutData) => {
     subtotal: (item.price || 0) * item.quantity
   }));
 
-  const checkout = {
-    reference,
-    ...checkoutData,
-    items: enrichedItems,
-    date: new Date()
-  };
+  const total = enrichedItems.reduce(
+    (sum, item) => sum + item.subtotal,
+    0
+  );
 
-  await database.add(checkout);
-
-  await orderDatabase.add({
+  const orderPreview = {
+    id: generateReference(),
     customerName: checkoutData.customerName,
     contactNumber: checkoutData.contactNumber,
     address: checkoutData.address,
     items: enrichedItems,
-    total: checkoutData.total,
-    reference,
-    status: "pending"
+    total,
+    status: "NEW REQUEST (PENDING OWNER)"
+  };
+
+  const message = whatsappController["formatMessage"]
+    ? whatsappController["formatMessage"](orderPreview)
+    : null;
+
+  const whatsappResult = await whatsappController.generateMessage({
+    orderId: null,
+    manualOrder: orderPreview
   });
 
   await cartDatabase.clear();
 
   return {
-    message: "Checkout completed successfully",
-    reference
+    message: "Order request sent via WhatsApp successfully",
+    reference: orderPreview.id,
+    whatsappMessage: message,
+    whatsappLink: whatsappResult.whatsappLink
   };
 };
 
-exports.getCheckoutByReference = async (reference) => {
-  const checkout = await database.getByReference(reference);
-
-  if (!checkout) {
-    throw Error.notFound("Checkout not found");
-  }
-
-  return checkout;
+/**
+ * for later when i add logging!!!!
+ */
+exports.getCheckoutByReference = async () => {
+  return {
+    message: "Checkout history not stored in this version (WhatsApp-based system)"
+  };
 };
